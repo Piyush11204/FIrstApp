@@ -22,8 +22,28 @@ class StyleItApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int cartCount = 0;
+
+  void _addToCart() {
+    setState(() {
+      cartCount++;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Item added to cart!'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +53,35 @@ class HomePage extends StatelessWidget {
         title: const Text('StyleIT'),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          // Handle navigation to different pages
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.deepPurple),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_box, color: Colors.deepPurple),
+            label: 'Add Your',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search, color: Colors.deepPurple),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite, color: Colors.deepPurple),
+            label: 'Favorites',
+
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.deepPurple),
+            label: 'Profile',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -53,24 +102,27 @@ class HomePage extends StatelessWidget {
                   SizedBox(
                     height: 380,
                     child: CarouselSlider(
-                      items: const [
+                      items: [
                         ProductCard(
                           imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9eAqxljTteybiscbJymwvzUIgJKvl-zF6bw&s',
                           productName: 'Trendy Shoes',
                           productDescription: 'Comfortable and stylish shoes for all occasions.',
                           price: '\$99.99',
+                          onAddToCart: _addToCart,
                         ),
                         ProductCard(
                           imageUrl: 'https://m.media-amazon.com/images/I/71-MzGdLobL.jpg',
                           productName: 'Smart Watch',
                           productDescription: 'Stay connected with this feature-packed watch.',
                           price: '\$199.99',
+                          onAddToCart: _addToCart,
                         ),
                         ProductCard(
                           imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSddIHTaQILb08u27O_xfPV7ubPhPPFqOPEwQ&s',
                           productName: 'Wireless Headphones',
                           productDescription: 'High-quality sound with noise cancellation.',
                           price: '\$59.99',
+                          onAddToCart: _addToCart,
                         ),
                       ],
                       options: CarouselOptions(
@@ -98,31 +150,35 @@ class HomePage extends StatelessWidget {
                     crossAxisSpacing: 16,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    childAspectRatio: 0.7, // Adjust this value to increase the size of the cards
-                    children: const [
+                    childAspectRatio: 0.7,
+                    children: [
                       ProductCard(
                         imageUrl: 'https://rukminim2.flixcart.com/image/850/1000/xif0q/backpack/m/n/h/-original-imah2c45crcyv2zm.jpeg?q=90&crop=false',
                         productName: 'Stylish Backpack',
                         productDescription: 'Durable and fashionable backpack for everyday use.',
                         price: '\$49.99',
+                        onAddToCart: _addToCart,
                       ),
                       ProductCard(
                         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXV2hV8xmutZK-1GmgKtT3LeoAhV468ETdMg&s',
                         productName: 'Cozy Sweater',
                         productDescription: 'Warm and comfortable sweater for the colder months.',
                         price: '\$29.99',
+                        onAddToCart: _addToCart,
                       ),
                       ProductCard(
                         imageUrl: 'https://faviana.com/cdn/shop/files/11023_BLACK_Alt_1_90676b54-524e-4598-bf15-ff8ffa333bcd.jpg?v=1702940690',
                         productName: 'Elegant Dress',
                         productDescription: 'Stylish and versatile dress for any occasion.',
                         price: '\$79.99',
+                        onAddToCart: _addToCart,
                       ),
                       ProductCard(
                         imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbAKaZlzVUCEt7vEi-5i3jYcw7oRphJvzJPigSputVXW2SVq08eR7WDmg2_pl7DvlJn2E&usqp=CAU',
                         productName: 'Designer Sunglasses',
                         productDescription: 'High-quality sunglasses with UV protection.',
                         price: '\$99.99',
+                        onAddToCart: _addToCart,
                       ),
                     ],
                   ),
@@ -133,9 +189,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add action for the button
-        },
+        onPressed: _addToCart,
         backgroundColor: Theme.of(context).colorScheme.secondary,
         child: const Icon(Icons.shopping_cart),
       ),
@@ -148,12 +202,14 @@ class ProductCard extends StatelessWidget {
   final String productName;
   final String productDescription;
   final String price;
+  final VoidCallback onAddToCart;
 
   const ProductCard({
     required this.imageUrl,
     required this.productName,
     required this.productDescription,
     required this.price,
+    required this.onAddToCart,
     super.key,
   });
 
@@ -170,7 +226,6 @@ class ProductCard extends StatelessWidget {
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-              
                 child: Image.network(
                   imageUrl,
                   width: double.infinity,
@@ -188,12 +243,27 @@ class ProductCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(productDescription),
             const SizedBox(height: 8),
-            Text(
-              price,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  price,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: onAddToCart,
+                  icon: const Icon(Icons.add_shopping_cart, size: 18),
+                  label: const Text('Add'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
